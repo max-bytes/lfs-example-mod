@@ -1,8 +1,12 @@
-# example mod for Lost For Swords
+# Modding for Lost For Swords
 
-So you want to make a mod for the game Lost For Swords? Add your own cards, change the game? You've come to the right place! :)
+So you want to make a mod for the game Lost For Swords? Add your own cards, change the game? You've come to the right place! This repository contains an example mod that should help you get started! :)
 
 It's not easy, but I will try to improve the experience and make it easier over time!
+
+## Disclaimer
+
+Adding mods to your game can make the game unstable, crash or freeze. It can also lead to your current run becoming corrupt. It should however not nuke your overall progress and not affect the rest of your computer. You can always remove all mods from the mod folder to restore the original game.
 
 ## Requirements
 * Windows
@@ -24,8 +28,24 @@ You should then see two files in the target folder:
 
 (Re)start the game and it should display that the example mod was loaded in the bottom left corner of the main menu screen. The mod contains only a single test card: a weapon for Knight called "Test Card". You should see it in the Card Library.
 
+## Examples
+The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the (base) game. That should give you a good insight into how card behaviors can be created. You could start by copying and modifying an existing card behavior and create your own version of it.
 
+## Testing
+The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test it thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
 
+## Current Status
+What is working and what isn't:
+### Working
+* creating cards and making them part of the card pool for heroes
+* removing existing cards
+* modifying existing cards (via removal and re-adding with different behavior)
 
-
-
+### Not working yet (list not exhaustive)
+* adding new heroes
+* adding or modifying towers
+* adding alternative starting decks
+* adding or modifying quests
+* adding or modifying mezzanines
+* card translations
+* advanced card behaviors like buffs and interceptors

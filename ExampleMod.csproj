@@ -1,10 +1,14 @@
 <Project Sdk="Godot.NET.Sdk/3.3.0">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+	  <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LFSBase" Version="1.43.5" />
-    <PackageReference Include="LFSComponent" Version="1.43.5" />
-    <PackageReference Include="LFSCore" Version="1.43.5" />
+    <PackageReference Include="LFSBase" Version="1.43.7" />
+    <PackageReference Include="LFSComponent" Version="1.43.7" />
+    <PackageReference Include="LFSCore" Version="1.43.7" />
   </ItemGroup>
+  <PropertyGroup>
+    <DefaultItemExcludes>$(DefaultItemExcludes);examples\**\*</DefaultItemExcludes>
+  </PropertyGroup>
 </Project>
