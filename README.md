@@ -29,10 +29,13 @@ You should then see two files in the target folder:
 (Re)start the game and it should display that the example mod was loaded in the bottom left corner of the main menu screen. The mod contains only a single test card: a weapon for Knight called "Test Card". You should see it in the Card Library.
 
 ## Examples
-The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the (base) game. That should give you a good insight into how card behaviors can be created. You could start by copying and modifying an existing card behavior and create your own version of it.
+The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the base game. That should give you a good introduction into how you can create your own card behaviors. You could start by copying and modifying an existing card behavior and create your own version of it!
 
 ## Testing
-The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test it thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
+The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test them thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
+
+## assets
+The only currently supported asset is making your own card portraits. You can include them by creating a .png file in the `assets/Textures` folder. Its filename should be the same as the card ID you defined in code. The recommended size for armor, potion, trinket and weapon portraits is 32x32 pixels. For auras, scrolls and spells its 64x36 pixels. See `testCard` for an example.
 
 ## Current Status
 What is working and what isn't:
