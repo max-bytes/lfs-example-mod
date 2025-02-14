@@ -9,11 +9,11 @@ if (-Not (Test-Path('.\Godot_v3.6-stable_mono_win64'))) {
 $targetDir = "$($env:APPDATA)\Godot\app_userdata\Card Stuff\mods"
 
 # build godot project
-Godot_v3.6-stable_mono_win64\Godot_v3.6-stable_mono_win64.exe --no-window --path . --export-pack "Build" "$($targetDir)\TestMod.pck" | Out-Default
+Godot_v3.6-stable_mono_win64\Godot_v3.6-stable_mono_win64.exe --no-window --path . --export-pack "Build" "$($targetDir)\ExampleMod.pck" | Out-Default
 
 # build c# project
-msbuild.exe TestMod.csproj /t:Restore /p:Configuration=ExportDebug | Out-Default
-msbuild.exe TestMod.csproj /t:Build /p:Configuration=ExportDebug | Out-Default
+msbuild.exe ExampleMod.csproj /t:Restore /p:Configuration=ExportDebug | Out-Default
+msbuild.exe ExampleMod.csproj /t:Build /p:Configuration=ExportDebug | Out-Default
 
 # copy dll to target folder
-Copy-Item ".mono\temp\bin\ExportDebug\TestMod.dll" -Destination $targetDir
+Copy-Item ".mono\temp\bin\ExportDebug\ExampleMod.dll" -Destination $targetDir

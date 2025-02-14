@@ -18,7 +18,7 @@ common/drop_mouse_on_gui_input_disabled=true
 
 [mono]
 
-project/assembly_name="TestMod"
+project/assembly_name="ExampleMod"
 
 [physics]
 
