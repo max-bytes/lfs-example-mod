@@ -28,6 +28,8 @@ You should then see two files in the target folder:
 
 (Re)start the game and it should display that the example mod was loaded in the bottom left corner of the main menu screen. The mod contains only a single test card: a weapon for Knight called "Test Card". You should see it in the Card Library.
 
+The code of the example mod is very basic and fully contained within `Main.cs`.
+
 ## Examples
 The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the base game. That should give you a good introduction into how you can create your own card behaviors. You could start by copying and modifying an existing card behavior and create your own version of it!
 
