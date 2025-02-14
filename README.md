@@ -14,7 +14,7 @@ Adding mods to your game can make the game unstable, crash or freeze. It can als
 * some knowledge of programming, preferably in C#. If you don't, you may be able to learn by the examples provided.
 * .NET 8.0 (later version probably works too): https://dotnet.microsoft.com/en-us/download
 * Godot 3.6 (will be automatically downloaded when building, you don't need to download it yourself)
-* a copy of this repository, either via download (https://github.com/max-bytes/lfs-example-mod/archive/refs/heads/main.zip) or git checkout
+* a copy of this repository, either via download (https://github.com/max-bytes/lfs-example-mod/archive/refs/heads/main.zip, unpacked in a folder of your choice) or git checkout
 * Visual Studio Code for editing code and running the build script (recommended, but not required)
 
 ## Quickstart
@@ -33,7 +33,13 @@ The code of the example mod is very basic and fully contained within `Main.cs`.
 ## Examples
 The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the base game. That should give you a good introduction into how you can create your own card behaviors. You could start by copying and modifying an existing card behavior and create your own version of it!
 
-## Testing
+## Running And Testing
+The general way of working with a mod is
+
+1. make changes to the .cs files (like `Main.cs`) and/or files in the `assets` folder
+2. run `build.ps1`
+3. (re)start the game
+
 The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test them thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
 
 ## Assets
