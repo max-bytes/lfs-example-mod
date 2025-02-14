@@ -36,7 +36,7 @@ The `examples` folder contains all `behaviors` for armor, auras, potions, scroll
 ## Testing
 The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test them thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
 
-## assets
+## Assets
 The only currently supported asset is making your own card portraits. You can include them by creating a .png file in the `assets/Textures` folder. Its filename should be the same as the card ID you defined in code. The recommended size for armor, potion, trinket and weapon portraits is 32x32 pixels. For auras, scrolls and spells its 64x36 pixels. See `testCard` for an example.
 
 ## Current Status
@@ -45,6 +45,7 @@ What is working and what isn't:
 * creating cards and making them part of the card pool for heroes
 * removing existing cards
 * modifying existing cards (via removal and re-adding with different behavior)
+* advanced card behavior: action interceptors
 
 ### Not working yet (list not exhaustive)
 * adding new heroes
@@ -53,4 +54,4 @@ What is working and what isn't:
 * adding or modifying quests
 * adding or modifying mezzanines
 * card translations
-* advanced card behaviors like buffs and interceptors
+* advanced card behavior: buffs
