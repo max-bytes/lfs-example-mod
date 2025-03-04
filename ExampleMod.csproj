@@ -4,9 +4,9 @@
 	  <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="LFSBase" Version="1.43.8" />
-    <PackageReference Include="LFSComponent" Version="1.43.8" />
-    <PackageReference Include="LFSCore" Version="1.43.8" />
+    <PackageReference Include="LFSBase" Version="1.44.0" />
+    <PackageReference Include="LFSComponent" Version="1.44.0" />
+    <PackageReference Include="LFSCore" Version="1.44.0" />
   </ItemGroup>
   <PropertyGroup>
     <DefaultItemExcludes>$(DefaultItemExcludes);examples\**\*</DefaultItemExcludes>
