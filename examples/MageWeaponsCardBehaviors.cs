@@ -22,10 +22,10 @@ namespace CardStuff.Card
     {
         protected override int StickyBase(IGameOrSimEntity card, IGameOrSimContext context) => DifficultyUtils.GetStartingAutoEquipWeaponReuseModifier(3, context);
 
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Auto-Equip[/b], [b]Ranged[/b]\nHas +{attackGain} Attack every second turn";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attackGain", AttackGain(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attackGain", AttackGain(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -48,13 +48,13 @@ namespace CardStuff.Card
             yield return new RequestEquipCardAction(card.iD.value);
         }
 
-        public override (int value, AttackType type)? TryGetResolvedAttackValueAndType(IGameOrSimEntity card, IGameOrSimContext context)
+        public override int? TryGetResolvedAttackValue(IGameOrSimEntity card, IGameOrSimContext context)
         {
             var attackGain = 0;
             if (context.CurrentTurn % 2 == 1)
                 attackGain = AttackGain(card.card.data.QualityModifier);
 
-            return (GetSimpleAttackValue(card) + attackGain, GetAttackType());
+            return GetSimpleAttackValue(card) + attackGain;
         }
 
         public override bool IsAutoEquip() => true;
@@ -62,10 +62,10 @@ namespace CardStuff.Card
 
     public abstract class BasicStaffCardBehavior : BasicMageWeaponCardBehavior
     {
-        public override (int value, AttackType type)? TryGetResolvedAttackValueAndType(IGameOrSimEntity card, IGameOrSimContext context)
+        public override int? TryGetResolvedAttackValue(IGameOrSimEntity card, IGameOrSimContext context)
         {
             var b = context.FilterBuffs<StaffArtisanBuff>().Sum(b => b.Modifier);
-            return (GetSimpleAttackValue(card) + b, AttackType.CloseRange);
+            return GetSimpleAttackValue(card) + b;
         }
 
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Staff; }
@@ -89,31 +89,31 @@ namespace CardStuff.Card
         private int AttackIncrease(int quality) => 5 + quality * 2;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Focus 2[/b]: has +{attackGain} Attack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attackGain", AttackIncrease(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attackGain", AttackIncrease(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.FocusX;
         }
 
-        public override (int value, AttackType type)? TryGetResolvedAttackValueAndType(IGameOrSimEntity card, IGameOrSimContext context)
+        public override int? TryGetResolvedAttackValue(IGameOrSimEntity card, IGameOrSimContext context)
         {
             if (card == null || context.HeroEntity == null)
                 return null;
 
-            var @base = base.TryGetResolvedAttackValueAndType(card, context);
-            var baseValue = @base.HasValue ? @base.Value.value : 0;
+            var @base = base.TryGetResolvedAttackValue(card, context);
+            var baseValue = @base.HasValue ? @base.Value : 0;
 
             var defense = context.HeroEntity.hasDefenseValue ? context.HeroEntity.defenseValue.value : 0;
             if (defense >= 2)
-                return (baseValue + AttackIncrease(card.card.data.QualityModifier), AttackType.CloseRange);
+                return baseValue + AttackIncrease(card.card.data.QualityModifier);
             else
-                return (baseValue, AttackType.CloseRange);
+                return baseValue;
         }
 
         public override int GetSimpleAttackValue(IGameOrSimEntity card) => 4;
     }
 
-    public class CeremonialStaffCardBehavior : BasicStaffCardBehavior
+    public class CeremonialStaffCardBehavior : BasicStaffCardBehavior, IQuestItemCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Quest Item[/b]";
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
@@ -127,7 +127,7 @@ namespace CardStuff.Card
     public class ManaStaffCardBehavior : BasicStaffCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Before Attack[/b]: [b]equip[/b] 2 [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb", quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb", quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -150,7 +150,7 @@ namespace CardStuff.Card
     public class FocusStaffCardBehavior : BasicStaffCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Focus {focus}[/b]: attack damage is dealt to all other Monsters too";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("focus", Focus); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("focus", Focus); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.FocusX;
@@ -183,7 +183,7 @@ namespace CardStuff.Card
     public class ExertStaffCardBehavior : BasicStaffCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Exert {exert}[/b]: gets {multiplier}x Attack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("exert", Exert); yield return ("multiplier", Multiplier); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("exert", Exert); yield return ("multiplier", Multiplier); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.ExertX;
@@ -215,7 +215,7 @@ namespace CardStuff.Card
     public class LightningStaffCardBehavior : BasicStaffCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Before Attack[/b]: trigger [b]Lightning {lightning}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("lightning", Lightning(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("lightning", Lightning(quality)); }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Staff; yield return CardTag.Lightning; }
 
         private int Lightning(int quality) => 3 + quality;
@@ -240,12 +240,12 @@ namespace CardStuff.Card
 
     public class IncineratorWandCardBehavior : BasicMageWeaponCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         private int Exert => 3;
         private int IncinerateDamage(int quality) => 3 + quality * 1;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Exert {exert}[/b]: deal [b]{damage} damage[/b] to each card";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("exert", Exert); yield return ("damage", IncinerateDamage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("exert", Exert); yield return ("damage", IncinerateDamage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -292,10 +292,10 @@ namespace CardStuff.Card
 
     public class FlameWandCardBehavior : BasicMageWeaponCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], Place [b]{lingeringFlame}[/b] at target's 4-neighbor spots";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"))); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], place [b]{lingeringFlame}[/b] at target's 4-neighbor spots";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -344,11 +344,11 @@ namespace CardStuff.Card
 
     public class SpellWandCardBehavior : BasicMageWeaponCardBehavior, IActiveEffectCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         private int AttackIncrease(int quality) => 4 + quality * 1;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], gets +{attackGain} Attack when a Spell is [b]prepared[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attackGain", AttackIncrease(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attackGain", AttackIncrease(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -390,11 +390,11 @@ namespace CardStuff.Card
 
     public class BlinkWandCardBehavior : BasicMageWeaponCardBehavior, IActiveEffectCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         private int AttackIncrease(int quality) => 5 + quality * 1;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], gets +{attackGain} Attack when your Hero [b]teleports[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attackGain", AttackIncrease(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attackGain", AttackIncrease(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -435,11 +435,11 @@ namespace CardStuff.Card
 
     public class WandOfRehearsalCardBehavior : BasicMageWeaponCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         private int Exert() => 5;
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Attack:  Exert {exert}[/b]: +1 Use";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("exert", Exert()); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Exert {exert}[/b]: gets +1 Use";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("exert", Exert()); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -472,12 +472,12 @@ namespace CardStuff.Card
 
     public class MaticksWandBehavior : BasicMageWeaponCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         protected override int StickyBase(IGameOrSimEntity card, IGameOrSimContext context) => 1 + card.card.data.QualityModifier;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Attack[/b]: [b]prepare {magicMissile}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -500,14 +500,14 @@ namespace CardStuff.Card
 
     public class AmenhotepsStaffBehavior : BasicStaffCardBehavior
     {
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Place [b]Emeralds[/b] at target's 4-neighbor spots";
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Place [b]Spiked Emeralds[/b] at target's 8-neighbors";
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
-            yield return new CardDataID("emerald01");
+            yield return new CardDataID("spikedEmerald");
         }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
-            yield return KeywordID.FourNeighbor;
+            yield return KeywordID.EightNeighbor;
         }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Staff; yield return CardTag.Loot; }
 
@@ -517,7 +517,7 @@ namespace CardStuff.Card
                 yield return new FizzleAction(hero.iD.value);
 
             var freeLocations = BoardUtils.GetAll().OrderBy(l => BoardUtils.GetSortIndex(l))
-                    .Where(l => BoardUtils.Are4Neighbors(l, target.boardLocation.location))
+                    .Where(l => BoardUtils.Are8Neighbors(l, target.boardLocation.location))
                     .Where(l => !context._GetCardsWithBoardLocation(l).Any())
                     .ToList();
 
@@ -526,7 +526,7 @@ namespace CardStuff.Card
                 yield return new SequenceAction(
                     freeLocations.Select(l => new SequenceAction(
                         new TriggerSoundAction("cardCreateOnBoard"),
-                        new CreateCardAtBoardLocationAction(new CardDataID("emerald01"), l, true),
+                        new CreateCardAtBoardLocationAction(new CardDataID("spikedEmerald"), l, true),
                         new DelayAction(10)
                     ))
                 );
@@ -536,16 +536,16 @@ namespace CardStuff.Card
             }
         }
 
-        public override int GetSimpleAttackValue(IGameOrSimEntity card) => 9 + card.card.data.QualityModifier * 3;
+        public override int GetSimpleAttackValue(IGameOrSimEntity card) => 6 + card.card.data.QualityModifier * 3;
     }
 
     public class WandOfMammonBehavior : BasicMageWeaponCardBehavior
     {
-        public override AttackType GetAttackType() => AttackType.Ranged;
+        public override AttackType GetSimpleAttackType() => AttackType.Ranged;
 
         protected override int StickyBase(IGameOrSimEntity card, IGameOrSimContext context) => 1 + card.card.data.QualityModifier;
 
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Attack[/b]: place [b]Emeralds[/b] between Hero and target";
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Ranged[/b], [b]Attack[/b]: place [b]Spiked Emeralds[/b] between Hero and target";
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -554,7 +554,7 @@ namespace CardStuff.Card
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Loot; }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
-            yield return new CardDataID("emerald01");
+            yield return new CardDataID("spikedEmerald");
         }
 
         public override IEnumerable<IActionData> OnPreAttackHits(IGameOrSimEntity hero, IGameOrSimEntity weapon, IGameOrSimEntity target, IGameOrSimContext context, AttackType attackType)
@@ -567,7 +567,7 @@ namespace CardStuff.Card
                 {
                     yield return new SequenceAction(
                         new TriggerSoundAction("cardCreateOnBoard"),
-                        new CreateCardAtBoardLocationAction(new CardDataID("emerald01"), l, true),
+                        new CreateCardAtBoardLocationAction(new CardDataID("spikedEmerald"), l, true),
                         new DelayAction(10));
                     l += d;
                 }
@@ -608,8 +608,8 @@ namespace CardStuff.Card
             public LogicWrapper(IGameOrSimEntity weapon, IGameOrSimContext context)
             {
                 this.weapon = weapon;
-                isRoot = !weapon.hasMimicStaffDepthCounter;
-                depth = weapon.hasMimicStaffDepthCounter ? weapon.mimicStaffDepthCounter.value : 0;
+                isRoot = !weapon.hasDepthCounter;
+                depth = weapon.hasDepthCounter ? weapon.depthCounter.value : 0;
                 cardsBelow = GetCardsInStackBelow(depth, context).GetEnumerator();
             }
 
@@ -618,8 +618,8 @@ namespace CardStuff.Card
 
             public void Dispose()
             {
-                if (isRoot && weapon.hasMimicStaffDepthCounter)
-                    weapon.RemoveMimicStaffDepthCounter();
+                if (isRoot && weapon.hasDepthCounter)
+                    weapon.RemoveDepthCounter();
                 cardsBelow.Dispose();
             }
 
@@ -627,7 +627,7 @@ namespace CardStuff.Card
             {
                 var b = cardsBelow.MoveNext();
                 if (b)
-                    weapon.ReplaceMimicStaffDepthCounter(cardsBelow.Current.Item1.cardInPileIndex.index);
+                    weapon.ReplaceDepthCounter(cardsBelow.Current.Item1.cardInPileIndex.index);
 
                 return b;
             }

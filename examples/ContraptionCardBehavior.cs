@@ -50,7 +50,7 @@ namespace CardStuff.Card
     public class NarrowTunnelBehavior : BasicContraptionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Add 2 [b]{claustrophobia}[/b] to Deck";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("claustrophobia", CardNames.Generate(claustrophobiaCardID)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("claustrophobia", CardNames.Generate(claustrophobiaCardID, lang)); }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return claustrophobiaCardID;
@@ -168,7 +168,7 @@ namespace CardStuff.Card
     public class SpikesCardBehavior : BasicContraptionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Take [b]{damage} damage[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); }
 
         private int Damage => 6;
 
@@ -215,7 +215,7 @@ namespace CardStuff.Card
     public class HerotrapBehavior : BasicContraptionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Lose [b]{damage} HP[/b], gain [b]{emeralds} Emeralds[/b] (usable multiple times)";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage); yield return ("emeralds", Emeralds); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); yield return ("emeralds", Emeralds); }
 
         private int Damage => 3;
         private int Emeralds => 5;
@@ -236,7 +236,7 @@ namespace CardStuff.Card
     public class PaywallBehavior : BasicContraptionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]{emeralds} Emeralds[/b] required";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("emeralds", Emeralds); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("emeralds", Emeralds); }
 
         private int Emeralds => 20;
 
@@ -498,7 +498,7 @@ namespace CardStuff.Card
     public class FountainOfHealthBehavior : BaseShrineBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Heal {heal}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", 9); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", 9); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Heal;
@@ -515,7 +515,7 @@ namespace CardStuff.Card
     public class FountainOfVitalityBehavior : BaseShrineBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Raise Max HP by {raiseHP}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("raiseHP", Raise); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("raiseHP", Raise); }
 
         private int Raise => 3;
 

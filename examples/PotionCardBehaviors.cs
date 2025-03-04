@@ -17,7 +17,7 @@ namespace CardStuff.Card
         public override bool IsCantripActive() => false;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Heal {heal}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", Heal); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", Heal); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Heal;
@@ -39,7 +39,7 @@ namespace CardStuff.Card
         public override bool IsCantripActive() => false;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Raise Max HP by {raiseHP}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("raiseHP", Raise); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("raiseHP", Raise); }
 
         public override int MaxUpgrade => 0;
 
@@ -54,7 +54,7 @@ namespace CardStuff.Card
     public class OilOfSharpnessBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Topmost Weapon gets +{additionalAttack} Attack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("additionalAttack", AdditionalAttack(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("additionalAttack", AdditionalAttack(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Replaceable;
@@ -75,7 +75,7 @@ namespace CardStuff.Card
     public class PotionOfPoisonBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Apply [b]{poison} Poison[/b] to all Monsters";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("poison", Poison(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("poison", Poison(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Poison;
@@ -101,7 +101,7 @@ namespace CardStuff.Card
     public class PotionOfFireBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Deal [b]{damage} damage[/b] to all Monsters";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.FireDamage;
@@ -126,7 +126,7 @@ namespace CardStuff.Card
     public class StealthPotionBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Gain [b]{stealth} Stealth[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("stealth", Stealth(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("stealth", Stealth(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Stealth;
@@ -146,7 +146,7 @@ namespace CardStuff.Card
     public class PotionOfSleepBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Apply [b]{sleep} Sleep[/b] to all Monsters";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("sleep", Sleep(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("sleep", Sleep(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Sleep;
@@ -168,7 +168,7 @@ namespace CardStuff.Card
     public class SmallHPPotionBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Heal {heal}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", Heal(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", Heal(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Heal;
@@ -186,7 +186,7 @@ namespace CardStuff.Card
     public class ManaPotionBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]equip[/b] [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -208,7 +208,7 @@ namespace CardStuff.Card
     public class BlinkPotionBehavior : BasicPotionCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "gain [b]{num} Teleport Charge[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("num", Num(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("num", Num(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.TeleportCharge;

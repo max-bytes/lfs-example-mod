@@ -18,7 +18,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Health;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Deal [b]{damage} damage[/b] to cards in this row and place [b]{lingeringFlame}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", GetDamage(quality)); yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", GetDamage(quality)); yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"), lang)); }
         public override IEnumerable<CardTag> ProvidesTags()
         {
             yield return CardTag.Spell; 
@@ -32,7 +32,7 @@ namespace CardStuff.Card
 
         private int GetDamage(int quality) => 5 + quality * 3;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var t = BoardUtils.GetAll()
                 .OrderBy(l => BoardUtils.GetSortIndex(l))
@@ -82,7 +82,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Health;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Deal [b]{damageCenter} damage[/b] to target and [b]{damageOthers} damage[/b] to 8-neighbors";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damageCenter", DamageCenter(quality)); yield return ("damageOthers", DamageOthers(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damageCenter", DamageCenter(quality)); yield return ("damageOthers", DamageOthers(quality)); }
         public override IEnumerable<CardTag> ProvidesTags()
         {
             yield return CardTag.Spell;
@@ -97,7 +97,7 @@ namespace CardStuff.Card
         private int DamageCenter(int quality) => 7 + quality * 2;
         private int DamageOthers(int quality) => 4 + quality * 1;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             yield return new AffectCardAndLocationAction(targetLocation, true, (e) => e.hasHealth,
                     e => new HurtTargetAction(e.iD.value, DamageCenter(spell.card.data.QualityModifier), HurtSource.Spell, HurtType.Fire),
@@ -139,7 +139,7 @@ namespace CardStuff.Card
         {
             return "Deal [b]{damage} damage[/b]";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("quickCast", ""); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("quickCast", ""); }
         public override IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) { yield return ("damage", GetDamage(card, context)); }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Spell; yield return CardTag.MagicMissiles; }
 
@@ -149,7 +149,7 @@ namespace CardStuff.Card
             return 3 + card.card.data.QualityModifier * 1 + modifiers;
         }
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var card = context._GetCardsWithBoardLocation(targetLocation).FirstOrDefault();
             if (card != null)
@@ -192,7 +192,7 @@ namespace CardStuff.Card
         public override int MaxUpgrade => 0; // TODO?
 
         public override bool IsOriginRelevantWhenCasting(IGameOrSimContext context) => true;
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             yield return new SetQuickTurnAction(true);
 
@@ -217,7 +217,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Hero;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Place [b]{lingeringFlame}[/b] at [b]Origin[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("lingeringFlame", CardNames.Generate(new CardDataID("lingeringFlame"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Origin;
@@ -232,7 +232,7 @@ namespace CardStuff.Card
         protected override int StickyBase(IGameOrSimEntity card, IGameOrSimContext context) => 1 + card.card.data.QualityModifier;
 
         public override bool IsOriginRelevantWhenCasting(IGameOrSimContext context) => true;
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             if (hero.hasPreviousBoardLocation && !context._GetCardsWithBoardLocation(hero.previousBoardLocation.location).Any())
             {
@@ -260,7 +260,7 @@ namespace CardStuff.Card
         {
             return "Trigger [b]Lightning {damage}[/b]";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", GetDamage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", GetDamage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.LightningX;
@@ -273,7 +273,7 @@ namespace CardStuff.Card
 
         protected int GetDamage(int quality) => 3 + quality * 1;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             foreach (var a in CombatService.TriggerLightning(hero, GetDamage(spell.card.data.QualityModifier), context, HurtSource.Spell, hero))
                 yield return a;
@@ -314,7 +314,7 @@ namespace CardStuff.Card
 
         public override int MaxUpgrade => 0;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var target = context._GetCardsWithBoardLocation(targetLocation).FirstOrDefault();
             if (target != null)
@@ -349,7 +349,7 @@ namespace CardStuff.Card
         {
             return "[b]Prepare[/b]: gain [b]{teleport} Teleport Charge[/b], [b]on teleport[/b]: draw card at source";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("teleport", Teleport(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("teleport", Teleport(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.TeleportCharge;
@@ -363,7 +363,7 @@ namespace CardStuff.Card
             yield return new DelayAction(20);
         }
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             // all happens on trigger
             yield break;
@@ -428,7 +428,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Hero;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Quick Cast[/b]: deal [b]{damage} damage[/b] to each 8-neighbor card";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", GetDamage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", GetDamage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.MultipleSpellUses;
@@ -442,7 +442,7 @@ namespace CardStuff.Card
 
         protected override int StickyBase(IGameOrSimEntity card, IGameOrSimContext context) => 1 + card.card.data.QualityModifier;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             yield return new SetQuickTurnAction(true);
 
@@ -470,8 +470,8 @@ namespace CardStuff.Card
         public override bool IsQuickCast => true;
         public override SpellTarget SpellTarget => SpellTarget.Hero;
 
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Quick Cast[/b]: draw card at [b]Origin[/b], [b]Exert {exert}[/b]: +1 Use";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("exert", Exert); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Quick Cast[/b]: draw card at [b]Origin[/b], [b]Exert {exert}[/b]: gets +1 Use";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("exert", Exert); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.ExertX;
@@ -490,7 +490,7 @@ namespace CardStuff.Card
 
         public override bool IsOriginRelevantWhenCasting(IGameOrSimContext context) => true;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             yield return new SetQuickTurnAction(true);
 
@@ -556,7 +556,7 @@ namespace CardStuff.Card
 
         public override int MaxUpgrade => 0;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var emptyLocations = BoardUtils.GetAll().OrderBy(l => BoardUtils.GetSortIndex(l))
                     .Where(l => BoardUtils.Are4Neighbors(l, targetLocation))
@@ -588,7 +588,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Hero;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Place [b]{lightningRod}[/b] at 4-neighbor spots, [b]Exert {exert}[/b]: trigger [b]Lightning {damage}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("exert", Exert(quality)); yield return ("damage", Damage(quality)); yield return ("lightningRod", CardNames.Generate(new CardDataID("lightningRod"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("exert", Exert(quality)); yield return ("damage", Damage(quality)); yield return ("lightningRod", CardNames.Generate(new CardDataID("lightningRod"), lang)); }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return new CardDataID("lightningRod");
@@ -602,9 +602,9 @@ namespace CardStuff.Card
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Spell; yield return CardTag.Lightning; yield return CardTag.Exert; }
 
         private int Damage(int quality) => 8 + quality * 2;
-        private int Exert(int quality) => 6;
+        private int Exert(int quality) => 4;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             yield return new SequenceAction(
                 BoardUtils.GetAll().OrderBy(l => BoardUtils.GetSortIndex(l))
@@ -643,7 +643,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Hero;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Prepare[/b] 2 [b]{magicMissile}[/b], place [b]Illusory Walls[/b] at 4-neighbor spots";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Prepare;
@@ -655,7 +655,7 @@ namespace CardStuff.Card
         }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Spell; yield return CardTag.MagicMissiles; }
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var quality = spell.card.data.QualityModifier;
             yield return new CreateCardOnHeroAction(new CardDataID("magicMissile", quality), forceEthereal: true);
@@ -685,7 +685,7 @@ namespace CardStuff.Card
         public override SpellTarget SpellTarget => SpellTarget.Health;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Move target to [b]Origin[/b], trigger [b]Lightning {damage}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Origin;
@@ -696,7 +696,7 @@ namespace CardStuff.Card
 
         public override bool IsOriginRelevantWhenCasting(IGameOrSimContext context) => true;
 
-        public override IEnumerable<IActionData> _OnCast(GameEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, GameContext context)
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
         {
             var target = context._GetCardsWithBoardLocation(targetLocation).FirstOrDefault();
             if (target != null && target.hasID)
@@ -716,6 +716,70 @@ namespace CardStuff.Card
         public override bool IsValidTarget(IGameOrSimEntity hero, IGameOrSimEntity spell, IGameOrSimEntity target, BoardLocation targetLocation, IGameOrSimContext context)
         {
             return target.hasHealth && target.isCardFlipped && !target.isHero;
+        }
+    }
+
+    public class EmeraldBoltBehavior : BasicSpellCardBehavior
+    {
+        public override int MaxUpgrade => 0;
+        private int Damage(int quality) => 1;
+        public override bool IsQuickCast => true;
+        public override SpellTarget SpellTarget => SpellTarget.Health;
+
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Prepare[/b] from Deck when Loot is collected, [b]Quick Cast[/b]: deal [b]{damage} damage[/b]";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage(quality)); }
+        public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return KeywordID.QuickCast;
+            yield return KeywordID.Loot;
+        }
+        public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Spell; }
+        public override IEnumerable<CardTag> RequiresTags() { yield return CardTag.Loot; }
+
+        public override IEnumerable<IActionData> _OnCast(IGameOrSimEntity hero, IGameOrSimEntity spell, BoardLocation targetLocation, IGameOrSimContext context)
+        {
+            var card = context._GetCardsWithBoardLocation(targetLocation).FirstOrDefault();
+            if (card != null)
+            {
+                yield return new SetQuickTurnAction(true);
+
+                yield return new VisualHeroRangedAttackAction(hero.iD.value, card.iD.value, () => new SequenceAction(
+                    new SpawnProjectileAction(ProjectileType.MageAttack, hero, card),
+                    new HurtTargetAction(card.iD.value, Damage(spell.card.data.QualityModifier), HurtSource.Spell, HurtType.Regular)
+                    ));
+            }
+        }
+
+        public override bool IsValidTarget(IGameOrSimEntity hero, IGameOrSimEntity spell, IGameOrSimEntity target, BoardLocation targetLocation, IGameOrSimContext context)
+        {
+            return target.hasHealth && target.isCardFlipped && !target.isHero;
+        }
+
+
+        public override void OnCreate(IGameOrSimEntity e, IGameOrSimContext context)
+        {
+            e.AddActionInterceptorSource(new IActionInterceptor[] { new Interceptor(e.iD.value) });
+        }
+
+        public class Interceptor : IActionInterceptor
+        {
+            public readonly EntityID cardID;
+
+            public Interceptor(EntityID cardID)
+            {
+                this.cardID = cardID;
+            }
+
+            public bool Prefilter(IActionData a, IGameOrSimEntity self, ActionExecutionContext context) => a is OnAfterCollectLootPlaceholderAction;
+            public IEnumerable<IActionData> OnEndAction(IActionData a, IGameOrSimEntity self, ActionExecutionContext context)
+            {
+                if (!self.hasCardArea || self.cardArea.Area != CardArea.HeroDrawPile)
+                    yield break;
+                if (context.GameOrSimContext.isOnMezzanine)
+                    yield break;
+
+                yield return new RequestEquipCardAction(self.iD.value);
+            }
         }
     }
 }

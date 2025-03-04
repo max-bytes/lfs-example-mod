@@ -137,7 +137,7 @@ namespace CardStuff.Card
 
         private int Cost => 10;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Lose [b]{cost} Emeralds[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("cost", Cost); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("cost", Cost); }
 
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {

@@ -182,7 +182,7 @@ namespace Core.Card
         private int Heal(int quality, int loopIndex) => 3 + loopIndex * 3;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Heal {heal}[/b] if not moved this turn";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", Heal(quality, loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", Heal(quality, loopIndex)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Heal;
@@ -418,7 +418,7 @@ namespace Core.Card
         {
             return "[b]Ranged[/b], [b]Shifty[/b]\nAttack: apply [b]{poison} Poison[/b]";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("poison", Poison(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("poison", Poison(loopIndex)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Ranged;
@@ -762,7 +762,7 @@ namespace Core.Card
         {
             return "[b]Eager[/b], [b]Cowardly[/b]\n[b]Timer[/b]: others [b]heal {heal}[/b]"; // NOTE: "other Monsters" too long, using "others" instead
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", Heal(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", Heal(loopIndex)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Eager;
@@ -854,7 +854,7 @@ namespace Core.Card
         {
             return "Gets +{defense} Defense and +{attack} Attack if moved this turn";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("defense", Defense(loopIndex)); yield return ("attack", Attack(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("defense", Defense(loopIndex)); yield return ("attack", Attack(loopIndex)); }
 
         protected override IEnumerable<IActionData> OnActiveEnemyTurn(IGameOrSimEntity hero, IGameOrSimEntity card, IGameOrSimContext context)
         {
@@ -1033,7 +1033,7 @@ namespace Core.Card
         {
             return "[b]Eager[/b], [b]Cowardly[/b]\n[b]Timer[/b]: others get +{defense} Defense"; // NOTE: "other Monsters" too long, using "others" instead
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("defense", Defense(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("defense", Defense(loopIndex)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Eager;
@@ -1124,7 +1124,7 @@ namespace Core.Card
         {
             return "Gets +{attack} Attack if it was attacked this turn";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attack", Attack(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attack", Attack(loopIndex)); }
 
         protected override IEnumerable<IActionData> OnActiveEnemyTurn(IGameOrSimEntity hero, IGameOrSimEntity card, IGameOrSimContext context)
         {
@@ -1156,7 +1156,7 @@ namespace Core.Card
         {
             return "Attack: apply [b]{poison} Poison[/b]";
         }
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("poison", Poison(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("poison", Poison(loopIndex)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Poison;

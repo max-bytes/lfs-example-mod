@@ -22,7 +22,7 @@ namespace CardStuff.Card
         private int Damage(int quality) => 3 + quality;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Lose Focus[/b]: trigger [b]Lightning {damage}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.LightningX;
@@ -76,8 +76,8 @@ namespace CardStuff.Card
     {
         public int FocusGain(int quality) => 1 + Mathf.FloorToInt(quality / 3f);
 
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Gets +{focusGain} Focus when a Spell is cast";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("focusGain", FocusGain(quality)); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Cast Spell: gets +{focusGain} Focus";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("focusGain", FocusGain(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Spell;
@@ -111,7 +111,7 @@ namespace CardStuff.Card
         }
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Before [b]equip[/b]:\n[b]Exert {exert}[/b]: gets +{focusGain} Focus";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("focusGain", FocusGain(quality)); yield return ("exert", Exert); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("focusGain", FocusGain(quality)); yield return ("exert", Exert); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -184,7 +184,7 @@ namespace CardStuff.Card
     public class ThinkersHatBehavior : BasicMageArcana, IActiveEffectCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Monster attacks: [b]lose {hpLoss} HP[/b], [b]drop[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("hpLoss", HPLoss(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("hpLoss", HPLoss(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Drop;
@@ -204,7 +204,7 @@ namespace CardStuff.Card
     public class ManaVialBelt : BasicMageArcana
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Equip[/b]: add 2 [b]{manaPotion}[/b] to Deck";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaPotion", CardNames.Generate(ManaPotion(quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaPotion", CardNames.Generate(ManaPotion(quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -232,7 +232,7 @@ namespace CardStuff.Card
     public class StrangeRobeBehavior : BasicMageArcana
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Equip[/b]: gain [b]{num} Teleport Charges[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("num", Num(quality)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("num", Num(quality)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.TeleportCharge;
@@ -255,7 +255,7 @@ namespace CardStuff.Card
     public class MaticksRobeBehavior : BasicMageArcana
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Equip[/b]: place [b]{magicMissile}[/b] at 4-neighbor spots";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.FourNeighbor;
@@ -366,22 +366,24 @@ namespace CardStuff.Card
 
     public class BattleMageRobeBehavior : BasicMageArcana, IActiveEffectCardBehavior
     {
+        public CardDataID ManaOrb(int cardQuality) => new CardDataID("manaOrb", Mathf.CeilToInt(cardQuality / 2f));
+
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Monster attacks: [b]equip[/b] [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
         }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
-            yield return new CardDataID("manaOrb");
+            yield return ManaOrb(card.card.data.QualityModifier);
         }
         public override IEnumerable<CardTag> ProvidesTags()
         {
             yield return CardTag.ManaOrb;
         }
 
-        protected override int GetSimpleDefenseValue(IGameOrSimEntity card) => 1 + card.card.data.QualityModifier * 2;
+        protected override int GetSimpleDefenseValue(IGameOrSimEntity card) => 1 + Mathf.FloorToInt(card.card.data.QualityModifier / 2f);
 
         public override void OnCreate(IGameOrSimEntity e, IGameOrSimContext context)
         {
@@ -407,8 +409,70 @@ namespace CardStuff.Card
                 if (!self.hasCardArea || self.cardArea.Area != CardArea.HeroGearArmor)
                     yield break; // arcana is not equipped
 
+                var behavior = CardRepository.GenerateCardBehaviorFromData(self.card.data) as BattleMageRobeBehavior;
+
                 yield return new ActivateCardAction(self.iD.value);
-                yield return new CreateCardOnHeroAction(new CardDataID("manaOrb"));
+                yield return new CreateCardOnHeroAction(behavior.ManaOrb(self.card.data.QualityModifier));
+                yield return new DelayAction(20);
+                yield return new DeactivateCardAction(self.iD.value);
+            }
+        }
+    }
+
+    public class RobeOfRichesBehavior : BasicMageArcana, IActiveEffectCardBehavior
+    {
+        public CardDataID ManaOrb(int cardQuality) => new CardDataID("manaOrb", cardQuality);
+
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Collect Loot: [b]equip[/b] [b]{manaOrb}[/b]";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality), lang)); }
+        public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return KeywordID.Equip;
+            yield return KeywordID.Loot;
+        }
+        public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return ManaOrb(card.card.data.QualityModifier);
+        }
+        public override IEnumerable<CardTag> RequiresTags()
+        {
+            yield return CardTag.Loot;
+        }
+        public override IEnumerable<CardTag> ProvidesTags()
+        {
+            yield return CardTag.ManaOrb;
+        }
+
+        protected override int GetSimpleDefenseValue(IGameOrSimEntity card) => 2 + card.card.data.QualityModifier;
+
+        public override void OnCreate(IGameOrSimEntity e, IGameOrSimContext context)
+        {
+            e.AddActionInterceptorSource(new IActionInterceptor[] { new Interceptor(e.iD.value) });
+        }
+
+        public class Interceptor : IActionInterceptor
+        {
+            public readonly EntityID cardID;
+
+            public Interceptor(EntityID cardID)
+            {
+                this.cardID = cardID;
+            }
+
+            public bool Prefilter(IActionData a, IGameOrSimEntity self, ActionExecutionContext context) => a is OnAfterCollectLootPlaceholderAction;
+            public IEnumerable<IActionData> OnEndAction(IActionData a, IGameOrSimEntity self, ActionExecutionContext context)
+            {
+                var hero = context.GameOrSimContext.HeroEntity;
+                if (hero == null || !hero.hasBoardLocation)
+                    yield break; // hero not found
+
+                if (!self.hasCardArea || self.cardArea.Area != CardArea.HeroGearArmor)
+                    yield break; // arcana is not equipped
+
+                var behavior = CardRepository.GenerateCardBehaviorFromData(self.card.data) as RobeOfRichesBehavior;
+
+                yield return new ActivateCardAction(self.iD.value);
+                yield return new CreateCardOnHeroAction(behavior.ManaOrb(self.card.data.QualityModifier));
                 yield return new DelayAction(20);
                 yield return new DeactivateCardAction(self.iD.value);
             }
@@ -418,7 +482,7 @@ namespace CardStuff.Card
     public class MoonstoneCircletBehavior : BasicMageArcana
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Auto-Equip[/b]: [b]equip[/b] [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(ManaOrb(quality), lang)); }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return ManaOrb(card.card.data.QualityModifier);
@@ -457,7 +521,7 @@ namespace CardStuff.Card
     public class SpellcraftersGloveBehavior : BasicMageArcana, ICantrippingCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Equip[/b]: [b]prepare[/b] Spell from Deck, [b]equip[/b] [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;

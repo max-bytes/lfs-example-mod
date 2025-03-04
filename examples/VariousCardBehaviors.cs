@@ -61,7 +61,7 @@ namespace Core.Card
         }
 
         public string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "";
-        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield break; }
+        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield break; }
         public IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) 
         {
             var description = "";
@@ -72,7 +72,7 @@ namespace Core.Card
 
             if (spellInteractionInfo != default)
             {
-                var spellName = CardNames.Generate(spellInteractionInfo.currentSpell.card.data);
+                var spellName = CardNames.Generate(spellInteractionInfo.currentSpell.card.data, lang);
                 if (spellInteractionInfo.heroIsValidTarget)
                 {
                     description = $"[b]Cast {spellName}[/b]"; // TODO: translate
@@ -236,7 +236,7 @@ namespace Core.Card
     public abstract class ExitFloorCardBehavior : ICardBehavior
     {
         public virtual string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "";
-        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield break; }
+        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield break; }
         public IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) => null;
         public IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
         public IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
@@ -360,7 +360,16 @@ namespace Core.Card
         }
 
         public string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]{keyName}[/b]\nrequired";
-        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("keyName", TranslationServer.Translate((winged) ? "Winged Key" : "Key")); }
+        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang)
+        {
+            var keyName = "Key";
+            try
+            {
+                keyName = TranslationServer.Translate(winged ? "Winged Key" : "Key");
+            }
+            catch { }
+            yield return ("keyName", keyName);
+        }
         public IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) => null;
         public IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
         public IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
@@ -436,7 +445,7 @@ namespace Core.Card
 
     public abstract class ExitRoomCardBehavior : ICardBehavior {
         public abstract string GenerateBaseDescriptionEN(int quality, bool isEthereal);
-        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield break; }
+        public IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield break; }
         public IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) => null;
         public IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
         public IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
@@ -569,9 +578,9 @@ namespace Core.Card
     public abstract class BasicLootCardBehavior : ICardBehavior
     {
         public virtual string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "";
-        public virtual IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield break; }
+        public virtual IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield break; }
         public virtual IEnumerable<(string, object)> GenerateDynamicDescriptionPlaceholders(IGameOrSimEntity card, IGameOrSimContext context, string lang) => null;
-        public IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
+        public virtual IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
         public IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context) { yield break; }
 
         public CardType CardType => CardType.Loot;
@@ -597,6 +606,8 @@ namespace Core.Card
 
             foreach (var a in OnCollect(hero, card, context))
                 yield return a;
+
+            yield return new OnAfterCollectLootPlaceholderAction();
 
             if (context.FilterBuffs<PlunderersRingBuff>().Any() && hero.hasPreviousBoardLocation && !context._GetCardsWithBoardLocation(hero.previousBoardLocation.location).Any())
             {
@@ -659,7 +670,7 @@ namespace Core.Card
     public class DeckInventoryBehavior : BasicLootCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "{deck}";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex)
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang)
         {
             yield break;
         }
@@ -704,8 +715,11 @@ namespace Core.Card
 
         public override IEnumerable<IActionData> OnCollect(IGameOrSimEntity hero, IGameOrSimEntity card, IGameOrSimContext context)
         {
-            var cardPosition = ((GameEntity)card).position.value;
-            yield return new CollectGoldAction(Worth, cardPosition);
+            if (card is GameEntity ge)
+            {
+                var cardPosition = ge.position.value;
+                yield return new CollectGoldAction(Worth, cardPosition);
+            }
 
             yield return new DestroyCardAction(card.iD.value, DestroyCardReason.Other, true);
         }
@@ -730,5 +744,44 @@ namespace Core.Card
     public class Emerald50CardBehavior : BasicGoldLootCardBehavior
     {
         public override int Worth => 50;
+    }
+
+    public class SpikedEmeraldCardBehavior : BasicLootCardBehavior
+    {
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Deal [b]{damage} damage[/b] to all Monsters, gain 1 Emerald";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); }
+
+        private int Damage => 1;
+        public override IEnumerable<IActionData> OnCollect(IGameOrSimEntity hero, IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            if (card.hasBoardLocation)
+            {
+                var heroLocation = card.boardLocation.location;
+
+                var t = BoardUtils.GetAll().OrderBy(l => BoardUtils.GetSortIndex(l))
+                        .Select(l => new AffectCardAndLocationAction(l, false, (e) => e.hasHealth && e.isEnemy,
+                            e => new HurtTargetAction(e.iD.value, Damage, HurtSource.Loot, HurtType.Regular),
+                            e =>
+                            {
+                                var locationDiff = BoardUtils.GetVectorDistance(heroLocation, l);
+                                var direction = locationDiff.AngleTo(new Vector2(1, 0));
+                                return new SequenceAction(
+                                    new TriggerSoundAction("heroAttack"),
+                                    new TriggerAnimationAction(context._GetBoardLocationEntity(l).iD.value, new AnimationTrigger("meleeAttack", new Dictionary<string, object> { { "direction", direction } })),
+                                    new DelayAction(10)
+                                );
+                            }
+                        ));
+                yield return new SequenceAction(t);
+            }
+
+            if (card is GameEntity ge)
+            {
+                var cardPosition = ge.position.value;
+                yield return new CollectGoldAction(1, cardPosition);
+            }
+
+            yield return new DestroyCardAction(card.iD.value, DestroyCardReason.Other, true);
+        }
     }
 }

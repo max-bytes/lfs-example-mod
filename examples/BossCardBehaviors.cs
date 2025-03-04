@@ -358,7 +358,7 @@ namespace CardStuff.Card
         private int ChannelInit(IGameOrSimEntity card, IGameOrSimContext context) => Math.Max(1, 6 - card.bossPhase.phase - DifficultyUtils.GetBossStrengthIncrease(context) - LoopingUtils.LoopIndex(context));
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Timer[/b]: others [b]flip[/b], get +{attack} Attack and [b]heal {heal}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attack", Attack(loopIndex)); yield return ("heal", Heal(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attack", Attack(loopIndex)); yield return ("heal", Heal(loopIndex)); }
 
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
@@ -490,7 +490,7 @@ namespace CardStuff.Card
         public override int NumPhases => NumPhasesStatic;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Timer[/b]: place [b]{tacticalRegroup}[/b] at Hero's 4-neighbor spots";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("tacticalRegroup", CardNames.Generate(new CardDataID("tacticalRegroup"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("tacticalRegroup", CardNames.Generate(new CardDataID("tacticalRegroup"), lang)); }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return new CardDataID("tacticalRegroup");
@@ -741,7 +741,7 @@ namespace CardStuff.Card
         public override MovementType MovementType => MovementType.WalkOnlyStraightTowardsHero4Neighbor;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Attack[/b]: +{defense} Defense";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("defense", Defense(loopIndex)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("defense", Defense(loopIndex)); }
 
         protected override IEnumerable<IActionData> OnActiveEnemyTurn(IGameOrSimEntity hero, IGameOrSimEntity card, IGameOrSimContext context)
         {

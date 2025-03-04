@@ -61,7 +61,7 @@ namespace CardStuff.Card
     {
         private int Buff() => 2;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Turn End[/b]: trigger [b]Poison[/b] {triggerPoison} additional times";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("triggerPoison", Buff()); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("triggerPoison", Buff()); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Poison;
@@ -121,7 +121,7 @@ namespace CardStuff.Card
             yield return new BowArtisanBuff(2, source);
         }
 
-        public override bool CanGetMultiple() => false;
+        public override bool CanGetMultiple() => true;
     }
 
     public class HammerArtisanTrinketCardBehavior : BasicTrinketCardBehavior
@@ -129,7 +129,7 @@ namespace CardStuff.Card
         private int Attack => 6;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Hammers have +{attack} Attack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attack", Attack); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attack", Attack); }
         public override IEnumerable<CardTag> RequiresTags() { yield return CardTag.Hammer; }
 
         protected override IEnumerable<IBuff> GetBuffs(EntityID source)
@@ -145,7 +145,7 @@ namespace CardStuff.Card
         private int Attack => 3;
 
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Staffs have +{attack} Attack and gain [b]equip[/b]: [b]equip[/b] [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("attack", Attack); yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attack", Attack); yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -160,6 +160,26 @@ namespace CardStuff.Card
         protected override IEnumerable<IBuff> GetBuffs(EntityID source)
         {
             yield return new StaffArtisanBuff(Attack, source);
+        }
+
+        public override bool CanGetMultiple() => true;
+    }
+
+    public class DaggerArtisanTrinketCardBehavior : BasicTrinketCardBehavior
+    {
+        private int Attack => 2;
+
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Daggers have +{attack} Attack and gain [b]Ranged Attack[/b]";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("attack", Attack); }
+        public override IEnumerable<CardTag> RequiresTags() { yield return CardTag.Dagger; }
+        public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return KeywordID.Ranged;
+        }
+
+        protected override IEnumerable<IBuff> GetBuffs(EntityID source)
+        {
+            yield return new DaggerArtisanBuff(Attack, source);
         }
 
         public override bool CanGetMultiple() => true;
@@ -600,7 +620,7 @@ namespace CardStuff.Card
     public class CatnapRingTrinketCardBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every [b]{turns}th Turn[/b] of a room, apply [b]1 Sleep[/b] to all Monsters";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("turns", Turns);  }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("turns", Turns);  }
 
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
@@ -1043,14 +1063,15 @@ namespace CardStuff.Card
             if (hero == null)
                 yield break;
 
+            yield return new ActivateCardAction(self.iD.value);
+
+            // heal
+            yield return new HealTargetAction(hero.iD.value, 1, true);
+
             // damage
             var targetedEnemies = context.GameOrSimContext._GetEnemyCardsOnBoard(true);
             if (targetedEnemies.Any())
             {
-                yield return new ActivateCardAction(self.iD.value);
-
-                yield return new HealTargetAction(hero.iD.value, 1, true);
-
                 var damage = 2;
                 IActionData damages = new SequenceAction(targetedEnemies
                     .Where(e => e.hasBoardLocation)
@@ -1068,9 +1089,9 @@ namespace CardStuff.Card
                 yield return damages;
 
                 yield return new DelayAction(20);
-                yield return new DeactivateCardAction(self.iD.value);
             }
 
+            yield return new DeactivateCardAction(self.iD.value);
         }
     }
 
@@ -1080,7 +1101,7 @@ namespace CardStuff.Card
         private int Heal => 1;
         private int Damage => 2;
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Successful [b]exert[/b]: [b]heal {heal}[/b] and deal [b]{damage} damage[/b] to each Monster";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("heal", Heal); yield return ("damage", Damage); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("heal", Heal); yield return ("damage", Damage); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Heal;
@@ -1124,7 +1145,7 @@ namespace CardStuff.Card
     public class PhoenixCharmBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Equip[/b] a [b]{manaOrb}[/b] whenever [b]exert[/b] fails";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -1215,7 +1236,7 @@ namespace CardStuff.Card
     public class AugustinsCharmBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every {numPoison}th time [b]poison triggers[/b]: all Monsters get -1 Attack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("numPoison", NumPoison); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("numPoison", NumPoison); }
         public override IEnumerable<CardTag> RequiresTags() { yield return CardTag.Poison; }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Disarm; }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
@@ -1259,7 +1280,7 @@ namespace CardStuff.Card
     public class BensKeyBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Lightning[/b] damage +{additionalDamage}";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("additionalDamage", 2); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("additionalDamage", 2); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.LightningX;
@@ -1411,7 +1432,7 @@ namespace CardStuff.Card
     public class IntimidationRingBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every {amount} [b]Overkill[/b] damage: deal [b]{damage} damage[/b] to all Monsters and [b]heal {heal}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("amount", Amount); yield return ("damage", Damage); yield return ("heal", Heal); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("amount", Amount); yield return ("damage", Damage); yield return ("heal", Heal); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.OverkillX;
@@ -1581,7 +1602,7 @@ namespace CardStuff.Card
     public class RingOfPatienceBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every [b]{turns}th turn[/b] of a room, deal [b]{damage} damage[/b] to all Monsters";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("turns", Turns); yield return ("damage", Damage); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("turns", Turns); yield return ("damage", Damage); }
 
         public int Turns => 18;
         public int Damage => 12;
@@ -1696,7 +1717,7 @@ namespace CardStuff.Card
     public class ChandrasEssenceBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every [b]{threshold} fire damage[/b] dealt: [b]prepare {flameDance}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("threshold", Threshold); yield return ("flameDance", CardNames.Generate(FlameDance)); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("threshold", Threshold); yield return ("flameDance", CardNames.Generate(FlameDance, lang)); }
         //public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         //{
         //    yield return KeywordID.FireDamage; // TODO: fire damage?
@@ -1770,7 +1791,7 @@ namespace CardStuff.Card
     public class FlashHealRingBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "After teleport: [b]heal 1[/b], [b]equip[/b] a [b]{manaOrb}[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("manaOrb", CardNames.Generate(new CardDataID("manaOrb"), lang)); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Equip;
@@ -1793,7 +1814,7 @@ namespace CardStuff.Card
     public class TearOfNyxBehavior : BasicTrinketCardBehavior
     {
         private CardDataID StealthPotion() => new CardDataID("stealthPotion");
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("stealthPotion", CardNames.Generate(StealthPotion())); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("stealthPotion", CardNames.Generate(StealthPotion(), lang)); }
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Enter room[/b]: add [b]{stealthPotion}[/b] to Deck";
 
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Stealth; }
@@ -1882,7 +1903,7 @@ namespace CardStuff.Card
     public class TeslasPartingGiftBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "After teleport: place [b]{lightningRod}[/b] at source";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("lightningRod", CardNames.Generate(new CardDataID("lightningRod"))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("lightningRod", CardNames.Generate(new CardDataID("lightningRod"), lang)); }
 
         public override IEnumerable<CardTag> RequiresTags() { yield return CardTag.Teleport; yield return CardTag.Lightning; }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
@@ -1939,7 +1960,7 @@ namespace CardStuff.Card
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Destroy Prop[/b]: [b]prepare[/b] [b]{magicMissile}[/b]";
 
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality))); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("magicMissile", CardNames.Generate(new CardDataID("magicMissile", quality), lang)); }
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.MagicMissiles; }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
@@ -1995,7 +2016,7 @@ namespace CardStuff.Card
 
     public class LuckyCharmBehavior : BasicTrinketCardBehavior
     {
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Destroy Prop[/b]: place [b]Emerald[/b] at its spot";
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Destroy Prop[/b]: place [b]Spiked Emerald[/b] at its spot";
 
         public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Loot; }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
@@ -2004,7 +2025,7 @@ namespace CardStuff.Card
         }
         public override IEnumerable<CardDataID> GetRelatedCards(IGameOrSimEntity card, IGameOrSimContext context)
         {
-            yield return new CardDataID("emerald01");
+            yield return new CardDataID("spikedEmerald");
         }
 
         public override bool CanGetMultiple() => false;
@@ -2044,7 +2065,7 @@ namespace CardStuff.Card
                     yield return new ActivateCardAction(self.iD.value);
 
                     yield return new TriggerSoundAction("cardCreateOnBoard");
-                    yield return new CreateCardAtBoardLocationAction(new CardDataID("emerald01"), ata.LastBoardLocation.Value, true);
+                    yield return new CreateCardAtBoardLocationAction(new CardDataID("spikedEmerald"), ata.LastBoardLocation.Value, true);
                     yield return new DelayAction(20);
 
                     yield return new DeactivateCardAction(self.iD.value);
@@ -2057,7 +2078,7 @@ namespace CardStuff.Card
     public class OgiersCollarBehavior : BasicTrinketCardBehavior
     {
         public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every [b]{threshold} damage[/b] blocked by Armor: [b]equip[/b] Weapon from Deck last in stack";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("threshold", Threshold); }
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("threshold", Threshold); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Armor;
@@ -2233,7 +2254,7 @@ namespace CardStuff.Card
 
     public class RingOfExuberanceBehavior : BasicTrinketCardBehavior
     {
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Hero [b]overheals X[/b]: top Weapon gets +X Attack";
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Hero [b]overheals X[/b]: top Weapon gets +X x 2 Attack";
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             //yield return KeywordID.Overheal; // TODO
@@ -2278,7 +2299,7 @@ namespace CardStuff.Card
 
                         var weapon = CombatService.GetTopHeroWeapon(context.GameOrSimContext, false);
                         if (weapon != null)
-                            yield return new IncreaseAttackAction(weapon.iD.value, oa.Amount, true);
+                            yield return new IncreaseAttackAction(weapon.iD.value, oa.Amount * 2, true);
                         yield return new DelayAction(10);
 
                         yield return new DeactivateCardAction(self.iD.value);
@@ -2319,8 +2340,8 @@ namespace CardStuff.Card
 
     public class DivineRingBehavior : BasicTrinketCardBehavior
     {
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]+{damage} holy damage[/b]";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "[b]Holy damage[/b] increased by {damage}";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.HolyDamage;
@@ -2344,7 +2365,7 @@ namespace CardStuff.Card
 
     public class KramersPendantBehavior : BasicTrinketCardBehavior
     {
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Hammers lose [b]Slow Attack[/b] while a Sin is in the room";
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Hammers lose [b]Slow Attack[/b] while a flipped Sin is in the room";
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.SlowAttack;
@@ -2391,8 +2412,8 @@ namespace CardStuff.Card
     public class AmuletOfIceBehavior : BasicTrinketCardBehavior
     {
         public int Damage => 3;
-        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Monster walking onto occupied spot is [b]pushed for {damage}[/b] into it instead";
-        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex) { yield return ("damage", Damage); }
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Monster moves onto occupied spot: it gets [b]pushed[/b] into it [b]for {damage}[/b]";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); }
         public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
         {
             yield return KeywordID.Push;
@@ -2407,6 +2428,28 @@ namespace CardStuff.Card
         }
 
         public override bool CanGetMultiple() => false;
+    }
+
+
+
+    public class PiezoRingBehavior : BasicTrinketCardBehavior
+    {
+        public int Damage => 3;
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Monster moves onto occupied spot: trigger [b]Lightning {damage}[/b]";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("damage", Damage); }
+        public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return KeywordID.LightningX;
+        }
+
+        public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Lightning; }
+
+        protected override IEnumerable<IBuff> GetBuffs(EntityID source)
+        {
+            yield return new PiezoRingBuff(Damage, source);
+        }
+
+        public override bool CanGetMultiple() => true;
     }
 
     public class PlunderersRingBehavior : BasicTrinketCardBehavior
@@ -2433,6 +2476,89 @@ namespace CardStuff.Card
         }
 
         public override bool CanGetMultiple() => false;
+    }
+
+    public class NobunagasLocketBehavior : BasicTrinketCardBehavior
+    {
+        public int Stealth => 2;
+        public int NumEquips => 6;
+        public override string GenerateBaseDescriptionEN(int quality, bool isEthereal) => "Every {numEquips}th time Weapon is [b]equipped[/b]: gain [b]{stealth} Stealth[/b], [b]equip[/b] Armor from Deck";
+        public override IEnumerable<(string, object)> GenerateStaticDescriptionPlaceholders(int quality, int loopIndex, string lang) { yield return ("numEquips", NumEquips); yield return ("stealth", Stealth); }
+        public override IEnumerable<KeywordID> GenerateKeywords(IGameOrSimEntity card, IGameOrSimContext context)
+        {
+            yield return KeywordID.Weapon;
+            yield return KeywordID.Equip;
+            yield return KeywordID.Armor;
+            yield return KeywordID.Stealth;
+        }
+
+        public override IEnumerable<CardTag> ProvidesTags() { yield return CardTag.Stealth; }
+
+        protected override IEnumerable<IBuff> GetBuffs(EntityID source)
+        {
+            yield break;
+        }
+
+        protected override void OnActivate(IGameOrSimEntity card)
+        {
+            card.ReplaceTrinketCounter(NumEquips);
+            card.AddActionInterceptorSource(new IActionInterceptor[] { new Interceptor(card.iD.value) });
+        }
+
+        public override bool CanGetMultiple() => false;
+
+        public class Interceptor : IActionInterceptor
+        {
+            public readonly EntityID cardID;
+
+            public Interceptor(EntityID cardID)
+            {
+                this.cardID = cardID;
+            }
+
+            public bool Prefilter(IActionData a, IGameOrSimEntity self, ActionExecutionContext context) => a is RequestEquipCardAction;
+            public IEnumerable<IActionData> OnEndAction(IActionData a, IGameOrSimEntity self, ActionExecutionContext context)
+            {
+                if (a is RequestEquipCardAction ra)
+                {
+                    if (!self.hasCardArea || self.cardArea.Area != CardArea.Trinkets)
+                        yield break;
+                    var hero = context.GameOrSimContext.HeroEntity;
+                    if (hero == null)
+                        yield break;
+
+                    var equippedCard = context.GameOrSimContext._GetEntityWithID(ra.CardID);
+                    if (equippedCard == null)
+                        yield break;
+
+                    if (CardUtils.GetCardType(equippedCard) != CardType.Weapon)
+                        yield break;
+
+                    yield return new ActivateCardAction(self.iD.value);
+
+                    self.ReplaceTrinketCounter(self.trinketCounter.counter - 1);
+
+                    if (self.trinketCounter.counter <= 0)
+                    {
+                        var behavior = CardRepository.GenerateCardBehaviorFromData(self.card.data) as NobunagasLocketBehavior;
+
+                        var armorInDrawPile = CombatService.GetTopCardInPile(context.GameOrSimContext, CardArea.HeroDrawPile, e => CardUtils.GetCardType(e) == CardType.Armor);
+                        if (armorInDrawPile != null)
+                            yield return new RequestEquipCardAction(armorInDrawPile.iD.value);
+
+                        yield return new ModifyStealthAction(hero.iD.value, behavior.Stealth, false);
+                        yield return new TriggerSoundAction("stealth");
+                        if (hero.hasBoardLocation)
+                            yield return new TriggerAnimationAction(context.GameOrSimContext._GetBoardLocationEntity(hero.boardLocation.location).iD.value, new AnimationTrigger("stealth"));
+                        yield return new DelayAction(10);
+
+                        self.ReplaceTrinketCounter(behavior.NumEquips);
+                    }
+
+                    yield return new DeactivateCardAction(self.iD.value);
+                }
+            }
+        }
     }
 }
 
