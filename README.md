@@ -10,23 +10,28 @@ Adding mods to your game can make the game unstable, crash or freeze. It can als
 
 ## Requirements
 * Windows
-* Lost For Swords (demo) installed from Steam or itch.io (version 1.44 or later)
+* Lost For Swords installed from Steam (version 1.47 or later)
 * some knowledge of programming, preferably in C#. If you don't, you may be able to learn by the examples provided.
 * .NET 8.0 (later version probably works too): https://dotnet.microsoft.com/en-us/download
 * Godot 3.6 (will be automatically downloaded when building, you don't need to download it yourself)
-* a copy of this repository, either via download (https://github.com/max-bytes/lfs-example-mod/archive/refs/heads/main.zip, unpacked in a folder of your choice) or git checkout
+* a copy of this repository
 * Visual Studio Code for editing code and running the build script (recommended, but not required)
 
 ## Quickstart
-After installing all the requirements, run the `build.ps1` script from this repository on the command line. It should automatically:
+After installing all the requirements, either clone the repository (using `git clone`) or download a snapshot of the repository (here: https://github.com/max-bytes/lfs-example-mod/archive/refs/heads/main.zip) and unpack(!) the zip file to a suitable location on your pc.
+
+After that, open a command line and navigate to the directory containing the `build.ps1` file. This is important, as the build script might not work when called from any other directory. Run the `build.ps1` script on the command line with `.\build.ps1`. It should automatically:
+* download a suitable version of Godot in the current folder
 * fully build the included example mod
 * install it in the main game by copying the built mod to the target folder `C:\Users\[youruser]\AppData\Roaming\Godot\app_userdata\Card Stuff\mods`
 
-You should then see two files in the target folder: 
+You should see two files in the target folder: 
 * `ExampleMod.dll`, which contains the code
 * `ExampleMod.pck`, which contains the assets
 
-(Re)start the game and it should display that the example mod was loaded in the bottom left corner of the main menu screen. The mod contains only a single test card: a weapon for Knight called "Test Card". You should see it in the Card Library.
+(Re)start the game and it should display that the example mod was loaded in the bottom left corner of the main menu screen. The mod contains:
+* a Hero ("Stickman"), including its default starting deck
+* a weapon card ("Test Card") for Knight and Stickman. You should see it in the Card Library.
 
 The code of the example mod is very basic and fully contained within `Main.cs`.
 
@@ -51,13 +56,20 @@ What is working and what isn't:
 * creating cards and making them part of the card pool for heroes
 * removing existing cards
 * modifying existing cards (via removal and re-adding with different behavior)
+* adding new heroes
+* adding alternative starting decks
 * advanced card behavior: action interceptors
 
 ### Not working yet (list not exhaustive)
-* adding new heroes
 * adding or modifying towers
-* adding alternative starting decks
 * adding or modifying quests
 * adding or modifying mezzanines
 * card translations
 * advanced card behavior: buffs
+
+## Updating
+From time to time, new updates for the game might introduce breaking changes. Such changes may break a mod and will require the mod-author to update their mod for a fix.
+
+The way to update a mod to the latest version is generally:
+* update the dependencies LFSBase, LFSComponent and LFSCore to the latest version. The example mod is set to use the latest version (in the mod's .csproj file, the PackageReference lines specify "*" for the version). You may need to tell Nuget to fetch the latest version using `dotnet build ExampleMod.csproj /t:Restore --no-cache /p:Configuration=ExportDebug | Out-Default`
+* after that, fix all compile errors to ensure your mod is compatible with the latest base game interface (IModRegister)

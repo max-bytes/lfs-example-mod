@@ -1,11 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using Action;
-using Base.Board;
 using Base.Card;
-using CardStuff.Action;
 using CardStuff.Card;
-using CardStuff.Utils;
 using Core.Action;
 using Core.Card;
 using Core.Utils;
@@ -16,10 +12,27 @@ public class Main : IModMain
 
     public void Register(IModRegister register)
     {
-        register.AddCard(new CardDefinition(new CardDataID("testCard"), "Test Card", new TestCardBehavior()).Knight());
+        register.AddCard(new CardDefinition(new CardDataID("testCard"), "Test Card", new TestCardBehavior()).Knight().AddForHero("stickman"));
         register.RemoveCard("sword");
-
         register.AddInterceptor<TestCardBehavior.Interceptor>();
+        register.AddStartingDeck(new StartingDeck("tester", "knight", "The Tester", false, new CardDataID[]
+        {
+            new CardDataID("knife"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+        }));
+
+        register.AddHero(new HeroData("stickman", 30, false, "Just a simple stickman"), "Stickman");
+        register.AddStartingDeck(new StartingDeck("default", "stickman", "The Stickler", false, new CardDataID[]
+        {
+            new CardDataID("bodyArmor"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+        }));
     }
 }
 
