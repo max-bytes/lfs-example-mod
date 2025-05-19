@@ -48,7 +48,7 @@ The general way of working with a mod is
 The best way to test your changes is in the Hero Academy! Create your own level that uses the new and modified cards to test them thorougly. That's much better than starting a tower run and hoping to see the changes there. Note that uploading levels made with modded cards is not possible.
 
 ## Assets
-The only currently supported asset is making your own card portraits. You can include them by creating a .png file in the `assets/Textures` folder. Its filename should be the same as the card ID you defined in code. The recommended size for armor, potion, trinket and weapon portraits is 32x32 pixels. For auras, scrolls and spells its 64x36 pixels. See `testCard` for an example.
+The only currently supported asset is making your own card portraits. You can include them by creating a .png file in the `assets/Textures` folder. Its filename should be the same as the card ID you defined in code. The recommended size for armor, potion, trinket and weapon portraits is 32x32 pixels. For auras, scrolls and spells its 64x32 pixels. See `testCard` for an example.
 
 ## Current Status
 What is working and what isn't:
