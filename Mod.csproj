@@ -9,6 +9,6 @@
     <PackageReference Include="LFSCore" Version="*" />
   </ItemGroup>
   <PropertyGroup>
-    <DefaultItemExcludes>$(DefaultItemExcludes);examples\**\*</DefaultItemExcludes>
+    <DefaultItemExcludes>$(DefaultItemExcludes);examples\**\*;uploader\**\*;</DefaultItemExcludes>
   </PropertyGroup>
 </Project>
