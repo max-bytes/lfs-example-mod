@@ -35,16 +35,6 @@ You should see two files in the target folder:
 
 The code of the example mod is very basic and fully contained within `Main.cs`.
 
-## Preparing and Uploading to Steam Workshop
-
-When you are ready to share your mod with the Steam community, follow these instructions to publish your mod on the Steam Workshop:
-
-* Create a `config.json` file in the root folder by copying the `config.sample.json` file and setting appropriate values for `name`, `title`, `description` and `version`. They will be used when publishing the game on Steam Workshop
-* Make sure Steam is running and you are logged in with a user that has the full version of the game
-* Run `.\upload.ps1`. The first time it runs, it will create a Workshop item and store its ID (publishedFileID) in the `config.json` file. On subsequent runs it will update this exact item.
-* When it has run successfully, the workshop item should soon after appear in the list of workshop items for the game: https://steamcommunity.com/workshop/browse/?appid=2638050
-* Others can now install your mod by subscribing to it, which will automatically download and install it when running the game through Steam. 
-
 ## Examples
 The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the base game. That should give you a good introduction into how you can create your own card behaviors. You could start by copying and modifying an existing card behavior and create your own version of it!
 
@@ -59,6 +49,15 @@ The best way to test your changes is in the Hero Academy! Create your own level 
 
 ## Assets
 The only currently supported asset is making your own card portraits. You can include them by creating a .png file in the `assets/Textures` folder. Its filename should be the same as the card ID you defined in code. The recommended size for armor, potion, trinket and weapon portraits is 32x32 pixels. For auras, scrolls and spells its 64x32 pixels. See `testCard` for an example.
+
+## Preparing and Uploading to Steam Workshop
+When you are ready to share your mod with the Steam community, follow these instructions to publish your mod on the Steam Workshop:
+
+* Create a `config.json` file in the root folder by copying the `config.sample.json` file and setting appropriate values for `name`, `title`, `description` and `version`. They will be used when publishing the game on Steam Workshop
+* Make sure Steam is running and you are logged in with a user that has the full version of the game
+* Run `.\upload.ps1`. The first time it runs, it will create a Workshop item and store its ID (publishedFileID) in the `config.json` file. On subsequent runs it will update this exact item.
+* When it has run successfully, the workshop item should soon after appear in the list of workshop items for the game: https://steamcommunity.com/workshop/browse/?appid=2638050
+* Others can now install your mod by subscribing to it, which will automatically download and install through Steam.
 
 ## Current Status
 What is working and what isn't:
@@ -83,3 +82,4 @@ From time to time, new updates for the game might introduce breaking changes. Su
 The way to update a mod to the latest version is generally:
 * update the dependencies LFSBase, LFSComponent and LFSCore to the latest version. The example mod is set to use the latest version (in the mod's .csproj file, the PackageReference lines specify "*" for the version). You may need to tell Nuget to fetch the latest version using `dotnet build ExampleMod.csproj /t:Restore --no-cache /p:Configuration=ExportDebug | Out-Default`
 * after that, fix all compile errors to ensure your mod is compatible with the latest base game interface (IModRegister)
+* upload a new version to Steam Workshop (don't forget to bump the version number in `config.json`)
