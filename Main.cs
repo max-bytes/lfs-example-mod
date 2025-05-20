@@ -8,7 +8,7 @@ using Core.Utils;
 
 public class Main : IModMain
 {
-    public string Version => "1.0.0";
+    public string Version => typeof(Main).Assembly.GetName().Version.ToString();
 
     public void Register(IModRegister register)
     {
