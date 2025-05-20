@@ -35,6 +35,16 @@ You should see two files in the target folder:
 
 The code of the example mod is very basic and fully contained within `Main.cs`.
 
+## Preparing and Uploading to Steam Workshop
+
+When you are ready to share your mod with the Steam community, follow these instructions to publish your mod on the Steam Workshop:
+
+* Create a `config.json` file in the root folder by copying the `config.sample.json` file and setting appropriate values for `name`, `title`, `description` and `version`. They will be used when publishing the game on Steam Workshop
+* Make sure Steam is running and you are logged in with a user that has the full version of the game
+* Run `.\upload.ps1`. The first time it runs, it will create a Workshop item and store its ID (publishedFileID) in the `config.json` file. On subsequent runs it will update this exact item.
+* When it has run successfully, the workshop item should soon after appear in the list of workshop items for the game: https://steamcommunity.com/workshop/browse/?appid=2638050
+* Others can now install your mod by subscribing to it, which will automatically download and install it when running the game through Steam. 
+
 ## Examples
 The `examples` folder contains all `behaviors` for armor, auras, potions, scrolls, spells, trinkets and weapons currently in the base game. That should give you a good introduction into how you can create your own card behaviors. You could start by copying and modifying an existing card behavior and create your own version of it!
 

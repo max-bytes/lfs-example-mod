@@ -2,6 +2,5 @@
     "name": "ExampleMod",
     "title": "Example Mod",
     "description": "An example mod for demonstration purposes.",
-    "version": "1.0.0.0",
-    "publishedFileID": 3484745195
+    "version": "1.0.0.0"
 }

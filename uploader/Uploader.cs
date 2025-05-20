@@ -55,7 +55,7 @@ var handle = MySteamAPI.StartItemUpdate(appID, publishedFileID);
 SteamUGC.SetItemTitle(handle, config.title);
 SteamUGC.SetItemDescription(handle, config.description);
 SteamUGC.SetItemUpdateLanguage(handle, "english");
-SteamUGC.SetItemVisibility(handle, ERemoteStoragePublishedFileVisibility.k_ERemoteStoragePublishedFileVisibilityPrivate); // TODO
+SteamUGC.SetItemVisibility(handle, ERemoteStoragePublishedFileVisibility.k_ERemoteStoragePublishedFileVisibilityPublic); // TODO
 // SteamUGC.SetItemTags(handle, new[] { "tag1", "tag2" });
 SteamUGC.SetItemPreview(handle, previewPath);
 SteamUGC.SetItemContent(handle, contentPath);
@@ -65,6 +65,8 @@ var (resUpdate, failureUpdate) = await MySteamAPI.SubmitItemUpdateAsync(handle, 
 if (failureUpdate || resUpdate.m_eResult != EResult.k_EResultOK) {
     Console.WriteLine($"Failed to update item: {resUpdate.m_eResult}");
     return;
+} else {
+    Console.WriteLine($"Item updated successfully!");
 }
 
 wtoken.Cancel();
