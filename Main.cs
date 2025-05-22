@@ -12,9 +12,30 @@ public class Main : IModMain
 
     public void Register(IModRegister register)
     {
-        register.AddCard(new CardDefinition(new CardDataID("testCard"), "Test Card", new TestCardBehavior()).Knight().AddForHero("stickman"));
+        // add a completely new hero to the game
+        register.AddHero(new HeroData("stickman", 30, false, "Just a simple stickman"), "Stickman");
+
+        // also give the hero a default starting deck
+        register.AddStartingDeck(new StartingDeck("default", "stickman", "The Stickler", false, new CardDataID[]
+        {
+            new CardDataID("bodyArmor"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+            new CardDataID("testCard"),
+        }));
+
+        // add a completely new card, add it to knight and stickman
+        register.AddCard(new CardDefinition(new CardDataID("testCard"), "Test Card", new TestCardBehavior()).AddForHero("knight").AddForHero("stickman").SetDropRate());
+        register.AddInterceptor<TestCardBehavior.Interceptor>(); // add the interceptor for the card, which is required for cards that use an interceptor
+
+        // completely remove a card from the game
         register.RemoveCard("sword");
-        register.AddInterceptor<TestCardBehavior.Interceptor>();
+
+        // update an existing card, adding it to the card pool for stickman
+        register.UpdateCard(register.GetCard("lance").AddForHero("stickman"));
+        
+        // add a new starting deck for the knight
         register.AddStartingDeck(new StartingDeck("tester", "knight", "The Tester", false, new CardDataID[]
         {
             new CardDataID("knife"),
@@ -24,15 +45,6 @@ public class Main : IModMain
             new CardDataID("testCard"),
         }));
 
-        register.AddHero(new HeroData("stickman", 30, false, "Just a simple stickman"), "Stickman");
-        register.AddStartingDeck(new StartingDeck("default", "stickman", "The Stickler", false, new CardDataID[]
-        {
-            new CardDataID("bodyArmor"),
-            new CardDataID("testCard"),
-            new CardDataID("testCard"),
-            new CardDataID("testCard"),
-            new CardDataID("testCard"),
-        }));
     }
 }
 

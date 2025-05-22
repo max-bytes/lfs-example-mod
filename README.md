@@ -59,6 +59,9 @@ When you are ready to share your mod with the Steam community, follow these inst
 * When it has run successfully, the workshop item should soon after appear in the list of workshop items for the game: https://steamcommunity.com/workshop/browse/?appid=2638050
 * Others can now install your mod by subscribing to it, which will automatically download and install through Steam.
 
+## Troubleshooting
+When a mod is loaded, it should show up in the bottom left corner of the main menu of the game. If it does not, or it does not work as expected, a look into the log files might help. The log files are located at `<YourUserDirectory>\AppData\Roaming\Godot\app_userdata\Card Stuff\logs`. Look for errors and warnings that relate to your mod.
+
 ## Current Status
 What is working and what isn't:
 ### Working
@@ -80,6 +83,6 @@ What is working and what isn't:
 From time to time, new updates for the game might introduce breaking changes. Such changes may break a mod and will require the mod-author to update their mod for a fix.
 
 The way to update a mod to the latest version is generally:
-* update the dependencies LFSBase, LFSComponent and LFSCore to the latest version. The example mod is set to use the latest version (in the mod's .csproj file, the PackageReference lines specify "*" for the version). You may need to tell Nuget to fetch the latest version using `dotnet build ExampleMod.csproj /t:Restore --no-cache /p:Configuration=ExportDebug | Out-Default`
+* update the dependencies LFSBase, LFSComponent and LFSCore to the latest version. The example mod is set to use the latest version (in the mod's .csproj file, the PackageReference lines specify "*" for the version). You may need to tell Nuget to fetch the latest version using `dotnet build Mod.csproj /t:Restore --no-cache /p:Configuration=ExportDebug | Out-Default`
 * after that, fix all compile errors to ensure your mod is compatible with the latest base game interface (IModRegister)
 * upload a new version to Steam Workshop (don't forget to bump the version number in `config.json`)
