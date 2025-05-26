@@ -20,6 +20,8 @@ Adding mods to your game can make the game unstable, crash or freeze. It can als
 ## Quickstart
 After installing all the requirements, either clone the repository (using `git clone`) or download a snapshot of the repository (here: https://github.com/max-bytes/lfs-example-mod/archive/refs/heads/main.zip) and unpack(!) the zip file to a suitable location on your pc.
 
+Create a config.json file in the root folder by duplicating the config.sample.json file and setting appropriate values for name, title, description and version. They will be used when building and publishing the game on Steam Workshop.
+
 After that, open a command line and navigate to the directory containing the `build.ps1` file. This is important, as the build script might not work when called from any other directory. Run the `build.ps1` script on the command line with `.\build.ps1`. It should automatically:
 * download a suitable version of Godot in the current folder
 * fully build the included example mod
@@ -53,7 +55,7 @@ The only currently supported asset is making your own card portraits. You can in
 ## Preparing and Uploading to Steam Workshop
 When you are ready to share your mod with the Steam community, follow these instructions to publish your mod on the Steam Workshop:
 
-* Create a `config.json` file in the root folder by copying the `config.sample.json` file and setting appropriate values for `name`, `title`, `description` and `version`. They will be used when publishing the game on Steam Workshop
+* Make sure your `config.json` file is created and up-to-date, as described above
 * Make sure Steam is running and you are logged in with a user that has the full version of the game
 * Run `.\upload.ps1`. The first time it runs, it will create a Workshop item and store its ID (publishedFileID) in the `config.json` file. On subsequent runs it will update this exact item.
 * When it has run successfully, the workshop item should soon after appear in the list of workshop items for the game: https://steamcommunity.com/workshop/browse/?appid=2638050
