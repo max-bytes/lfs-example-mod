@@ -1,8 +1,8 @@
 # Modding for Lost For Swords
 
-So you want to make a mod for the game Lost For Swords? Add your own cards, change the game? You've come to the right place! This repository contains an example mod that should help you get started! :)
+Do you want to make a mod for the game Lost For Swords? Add your own cards and change the game? You've come to the right place! This repository contains an example mod that should help you get started! :)
 
-It's not easy, but I will try to improve the experience and make it easier over time!
+It's not easy, but I will try to improve the experience and make it better over time!
 
 ## Disclaimer
 
